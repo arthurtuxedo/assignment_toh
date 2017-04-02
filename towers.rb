@@ -20,13 +20,10 @@ def start_game_loop
   middle_peg = []
   right_peg = []
   until right_peg == 1.upto(max_value).to_a.reverse || middle_peg == 1.upto(max_value).to_a.reverse do
-    print left_peg
-    print middle_peg
-    print right_peg
-    puts ""
+    render(left_peg,middle_peg,right_peg)
     puts "Please enter the number of the ring you would like to move FROM, followed by the ring to move TO (ie 1,3). Enter q to quit:"
-    user_input = gets.chomp
-    if user_input == "q"
+    user_input = gets.chomp.split(",")
+    if user_input == ["q"]
       puts "Thanks for playing!"
       break
     elsif user_input == "1,2"
@@ -55,10 +52,11 @@ def start_game_loop
   puts "A winner is you!"
 end
 
-def render
-  puts left_peg
-  puts middle_peg
-  puts right_peg
+def render(left_peg,middle_peg,right_peg)
+  print left_peg
+  print middle_peg
+  print right_peg
+  puts ""
 end
 
 
