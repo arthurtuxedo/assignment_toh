@@ -14,25 +14,35 @@ puts "Your goal is to move the tower from the left-most ring to the middle or ri
 puts "You can only move the top-most disc, and only onto a ring that does not contain a smaller disc than the one you are moving."
 
 def start_game_loop
-  puts "How many discs would you like to use?"
-  max_value = gets.chomp.to_i
-  pegs = [[1.upto(max_value).to_a.reverse],[],[]]
+  # Ask player to input the number of discs. If the answer is not between 1 and 8, loop until it is.
+  max_value = 0
+  until max_value >= 1 && max_value <= 8
+    puts "How many discs would you like to use? (1-8)"
+    max_value = gets.chomp.to_i
+  end
+  # Set the three pegs to arrays that contain discs 1-8. At beginning, all discs are on pegs[0], largest on bottom
+  pegs = [1.upto(max_value).to_a.reverse,[],[]]
+  # Keep looping the game until all discs are in order on the middle or right peg, which is our victory condition
   until pegs[1] == 1.upto(max_value).to_a.reverse || pegs[2] == 1.upto(max_value).to_a.reverse do
+    # Call our render function to show the user the current arrangement of discs.
     render(pegs)
-    puts "Please enter the number of the ring you would like to move FROM, followed by the ring to move TO (ie 1,3). Enter q to quit:"
+    # Ask the user the peg numbers to move the top disc from and to. Split the response into an array that will be passed as arguments for later functions.
+    puts "Please enter the number of the peg you would like to move FROM, followed by the peg to move TO (ie 1,3). Enter q to quit:"
     user_input = gets.chomp.split(",")
     if user_input == ["q"]
-      puts "Thanks for playing!"
+      player_quit = true
       break
     else
+      #First we check if the requested move is legal. If so, then we move the disc to the specified peg.
       if check_if_legal(user_input[0].to_i,user_input[1].to_i,pegs)
         pegs = move_disc(user_input[0].to_i,user_input[1].to_i,pegs)
       else
+        #If the move is not legal, we use the next command to cycle back through the loop.
         next
       end
     end
   end
-  puts "A winner is you!"
+  if player_quit; puts "A quitter is you!" else puts "A winner is you!" end
 end
 
 def render(pegs)
@@ -45,18 +55,21 @@ def check_if_legal(from,to,pegs)
     puts "Invalid entry. Please enter a ring number between 1 and 3"
     return false
   end
-  if pegs[to].nil?
-    return true
-  elsif pegs[to].empty? || pegs[to].last > pegs[from].last
+  if pegs[from-1].empty?
+    puts "Invalid entry. Ring #{from} does not contain a disc."
+    return false
+  elsif pegs[to-1].empty? || pegs[to-1].last > pegs[from-1].last
+    # Return true and advance to the move_disc function if the destination peg is either empty or its last disc is larger than the one we are trying to move.
     return true
   else
     puts "Invalid entry. Larger blocks cannot be moved on top of smaller blocks."
+    return false
   end
 end
 
 def move_disc(from,to,pegs)
-  current_disc = pegs[from].pop
-  pegs[to] << current_disc
+  current_disc = pegs[from-1].pop
+  pegs[to-1] << current_disc
   return pegs
 end
 
