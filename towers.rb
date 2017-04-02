@@ -16,49 +16,49 @@ puts "You can only move the top-most disc, and only onto a ring that does not co
 def start_game_loop
   puts "How many discs would you like to use?"
   max_value = gets.chomp.to_i
-  left_peg = 1.upto(max_value).to_a.reverse
-  middle_peg = []
-  right_peg = []
-  until right_peg == 1.upto(max_value).to_a.reverse || middle_peg == 1.upto(max_value).to_a.reverse do
-    render(left_peg,middle_peg,right_peg)
+  pegs = [[1.upto(max_value).to_a.reverse],[],[]]
+  until pegs[1] == 1.upto(max_value).to_a.reverse || pegs[2] == 1.upto(max_value).to_a.reverse do
+    render(pegs)
     puts "Please enter the number of the ring you would like to move FROM, followed by the ring to move TO (ie 1,3). Enter q to quit:"
     user_input = gets.chomp.split(",")
     if user_input == ["q"]
       puts "Thanks for playing!"
       break
-    elsif user_input == "1,2"
-      current_disc = left_peg.pop
-      middle_peg.push(current_disc)
-    elsif user_input == "1,3"
-      current_disc = left_peg.pop
-      right_peg.push(current_disc)
-    elsif user_input == "2,1"
-      current_disc = middle_peg.pop
-      left_peg.push(current_disc)
-    elsif user_input == "2,3"
-      current_disc = middle_peg.pop
-      right_peg.push(current_disc)
-    elsif user_input == "3,1"
-      current_disc = right_peg.pop
-      left_peg.push(current_disc)
-    elsif user_input == "3,2"
-      current_disc = right_peg.pop
-      middle_peg.push(current_disc)
     else
-      puts "Invalid entry. Please enter whole numbers between 1 and 3 or q to quit."
-      next
+      if check_if_legal(user_input[0].to_i,user_input[1].to_i,pegs)
+        pegs = move_disc(user_input[0].to_i,user_input[1].to_i,pegs)
+      else
+        next
+      end
     end
   end
   puts "A winner is you!"
 end
 
-def render(left_peg,middle_peg,right_peg)
-  print left_peg
-  print middle_peg
-  print right_peg
+def render(pegs)
+  print pegs
   puts ""
 end
 
+def check_if_legal(from,to,pegs)
+  if from < 1 || to < 1 || from > 3 || to > 3
+    puts "Invalid entry. Please enter a ring number between 1 and 3"
+    return false
+  end
+  if pegs[to].nil?
+    return true
+  elsif pegs[to].empty? || pegs[to].last > pegs[from].last
+    return true
+  else
+    puts "Invalid entry. Larger blocks cannot be moved on top of smaller blocks."
+  end
+end
+
+def move_disc(from,to,pegs)
+  current_disc = pegs[from].pop
+  pegs[to] << current_disc
+  return pegs
+end
 
 start_game_loop
 
@@ -68,3 +68,23 @@ start_game_loop
 #     right_peg << current_move
 #   elsif right_peg.empty? && current_move != max_value
 #     middle_peg << current_move
+
+
+  # if user_input == "1,2"
+  #   current_disc = left_peg.pop
+  #   middle_peg.push(current_disc)
+  # elsif user_input == "1,3"
+  #   current_disc = left_peg.pop
+  #   right_peg.push(current_disc)
+  # elsif user_input == "2,1"
+  #   current_disc = middle_peg.pop
+  #   left_peg.push(current_disc)
+  # elsif user_input == "2,3"
+  #   current_disc = middle_peg.pop
+  #   right_peg.push(current_disc)
+  # elsif user_input == "3,1"
+  #   current_disc = right_peg.pop
+  #   left_peg.push(current_disc)
+  # elsif user_input == "3,2"
+  #   current_disc = right_peg.pop
+  #   middle_peg.push(current_disc)
