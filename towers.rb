@@ -25,7 +25,7 @@ def start_game_loop
   # Keep looping the game until all discs are in order on the middle or right peg, which is our victory condition
   until pegs[1] == 1.upto(max_value).to_a.reverse || pegs[2] == 1.upto(max_value).to_a.reverse do
     # Call our render function to show the user the current arrangement of discs.
-    render(pegs)
+    render(pegs,max_value)
     # Ask the user the peg numbers to move the top disc from and to. Split the response into an array that will be passed as arguments for later functions.
     puts "Please enter the number of the peg you would like to move FROM, followed by the peg to move TO (ie 1,3). Enter q to quit:"
     user_input = gets.chomp.split(",")
@@ -45,9 +45,13 @@ def start_game_loop
   if player_quit; puts "A quitter is you!" else puts "A winner is you!" end
 end
 
-def render(pegs)
-  print pegs
+def render(pegs,max_value)
   puts ""
+  (max_value-1).downto(0) do |i|
+    puts "#{pegs[0][i]}        #{pegs[1][i]}        #{pegs[2][i]}"
+  end
+  puts ""
+  puts "1        2        3"
 end
 
 def check_if_legal(from,to,pegs)
